@@ -12,11 +12,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, comment = "##", prompt = TRU
 
 ## Study Description:
 
-##### Seagrasses are marine angiosperms which exist on all continents except Antarctica and often form dense monoculture meadows in shallow and calm coastal inlets. These dense meadows provide, among other things, habitat to a wide variety of marine organisms, many of which are endangered or commercially valuable. Unfortunately, seagrasses are experiencing rapid degredation, as anthropogenic threats such as trawling, dredging, and eutrophication have caused a tenfold decrease in seagrass cover over the last 40 years.
+Seagrasses are marine angiosperms which exist on all continents except Antarctica and often form dense monoculture meadows in shallow and calm coastal inlets. These dense meadows provide, among other things, habitat to a wide variety of marine organisms, many of which are endangered or commercially valuable. Unfortunately, seagrasses are experiencing rapid degredation, as anthropogenic threats such as trawling, dredging, and eutrophication have caused a tenfold decrease in seagrass cover over the last 40 years.
 
-##### Locally, this degredation can look like a boat anchor dragging through a meadow, ripping up seagrass and reducing the plant, or "shoot" density in the vicinity. This subsequently reduces the complexity of the habitat. Because complex habitats provide more hide space for juveniles and vulnerable prey, a reduction in this complexity is theorized to reduce the density and diversity of ecosystem associated fauna, even on small scales. To test this out, this study collected motile fauna samples using seine net hauls from six 6x6 meter seagrass plots from the same meadow over a gradient of varying habitat characteristics, including seagrass percent cover and shoot density. They repeated this for ten 6x6 seagrass plots at the same location the subsequent year.
+Locally, this degredation can look like a boat anchor dragging through a meadow, ripping up seagrass and reducing the plant, or "shoot" density in the vicinity. This subsequently reduces the complexity of the habitat. Because complex habitats provide more hide space for juveniles and vulnerable prey, a reduction in this complexity is theorized to reduce the density and diversity of ecosystem associated fauna, even on small scales. To test this out, this study collected motile fauna samples using seine net hauls from six 6x6 meter seagrass plots from the same meadow over a gradient of varying habitat characteristics, including seagrass percent cover and shoot density. They repeated this for ten 6x6 seagrass plots at the same location the subsequent year.
 
-##### In order to statistically confirm if there is a difference in faunal density and diversity between high and low cover plots the following analyses were employed
+In order to statistically confirm if there is a difference in faunal density and diversity between high and low cover plots the following analyses were employed
 
 ##### - Summary stats (means, standard deviations, frequencies)
 
@@ -30,13 +30,13 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, comment = "##", prompt = TRU
 
 ##### - Spearmans Rank Correlations
 
-##### For the purposes of this assignment, we will be replicating the ANOSIM, Shannon Diversity Index, and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+For the purposes of this assignment, we will be replicating the ANOSIM, Shannon Diversity Index, and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
 
 ## Getting started
 
 ### Loading data and collecting summary stats
 
-#### First, lets load and explore the data.
+First, lets load and explore the data.
 
 ```{r}
 library(curl)
@@ -45,4 +45,21 @@ d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 d
 ```
 
-##### The data set being used shows each family and species collected during the seine net samples, as well as its common name. It then shows the amount of this species collected for 8 high an 8 low density plots.
+The data set being used shows each family and species collected during the seine net samples, as well as its common name. It then shows the amount of this species collected for 8 high an 8 low density plots.
+
+Unfortunately, in this format, data analysis is difficult. I have gone ahead and reformatted the excel file, and will upload it below, but I first wanted to show the original. 
+
+```{r}
+library(curl)
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/ceceg27_edited_data.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+d
+```
+
+In this format, high and low plots are not in the same row, and each column is by species, not by plot, so their analyses can be conducted separately. 
+
+Now we can get some summary stats for this data 
+```{r}
+
+```
+
