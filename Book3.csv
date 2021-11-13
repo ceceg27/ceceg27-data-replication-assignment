@@ -1,0 +1,20 @@
+﻿Family,Species,Name,high ,low ,high.error,low.error
+Gobiidae,Pomatoschistus minutus,Sand goby,0.00,0.13,0,0.353553391
+Labridae,Symphodus melops,Corkwing,2.38,0.00,2.55999442,0
+Gasterosteidae,Spinachia spinachia,Fifteen-spined stickleback,0.75,0.25,0.707106781,0.46291005
+Pleuronectidae,Pleuronectes platessa,Plaice,0.13,2.25,0.353553391,2.121320344
+Palaemonidae,Palaemon serratus,Common prawn,27.25,49.63,27.63408868,36.86631254
+Crangonidae,Crangon crangon,Brown shrimp,0.63,0.00,1.187734939,0
+Cottidae,Taurulus bubalis,Sea Scorpion,0.63,0.25,0.51754917,0.46291005
+Callionymidae,Callionymus lyra,common dragonet,0.88,0.00,0.83452296,0
+Gobiidae,Gobiusculus flavescens,two-spot goby,0.75,0.00,1.035098339,0
+Clupeidae,Clupea harengus,herring,8.00,0.38,17.23783215,0.51754917
+Labridae,Centrolabrus exoletus ,rock cook,0.13,0.00,0.353553391,0
+Labridae,Labrus bergylta,ballan wrasse,0.63,0.00,0.916125381,0
+Gadidae,Pollachius pollachius,pollack,7.25,5.63,4.773438413,5.44944296
+Atherinidae,Atherina prebyter,sand smelt,0.63,1.25,1.060660172,1.832250763
+Syngnathidae,Syngnathus acus,greater pipefish,0.38,0.00,0.51754917,0
+Lotidae,Ciliata mustela,five bearded rockling,0.13,0.13,0.353553391,0.353553391
+Gadidae,Gadus morhua,atlantic cod,1.13,1.25,1.246423455,1.832250763
+Scyliorhinidae,Scyliorhinus canicula,dogfish,0.13,0.00,0.353553391,0
+Syngnathidae,Entelurus aequoreus,snake pipefish,0.25,0.00,0.46291005,0
