@@ -30,7 +30,7 @@ In order to statistically confirm if there is a difference in faunal density and
 
 ##### - Spearmans Rank Correlations
 
-For the purposes of this assignment, we will be replicating the ANOSIM, Shannon Diversity Index, and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+For the purposes of this assignment, we will be replicating the ANOSIM and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
 
 ## Getting started
 
@@ -51,15 +51,65 @@ Unfortunately, in this format, data analysis is difficult. I have gone ahead and
 
 ```{r}
 library(curl)
-f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/ceceg27_edited_data.csv")
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/edited_data.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 d
+summary(d)
 ```
+
+require(ggplot2)
+ggplot(data = d, aes(x=species, y=count)) + geom_boxplot(aes(fill=percent.cover))
+
+
+
+```{r}
+require(ggplot2)
+p <- ggplot(data = d, aes(x = species, y = log(count), fill = percent.cover)) 
+p <- p + geom_col(position = position_dodge(),color = "black",preserve = "single") 
+p <- p + theme(axis.text.x = element_text(angle = 90))
+p <- p + scale_fill_manual(values = c(rep(c("gray25", "gray75"))))
+p <- p + ylab("Faunal bundance (log) per siene haul") +xlab("")
+
+p
+
+```
+ + geom_errorbar(aes(ymin=count-sd, ymax=count+sd), width=.2,
+                 position=position_dodge(.9)) 
+
+
+?geom_col
+```
+
 
 In this format, high and low plots are not in the same row, and each column is by species, not by plot, so their analyses can be conducted separately. 
 
-Now we can get some summary stats for this data 
+Now lets prepare the data so we can easily get summary stats  
 ```{r}
+d.data <-as.data.frame(d) #turn data into a data frame
+d.data2 <-as.numeric(d.data$count)
+d.data2
+```
+
+
+d.data2 <- lapply(
+d.data2
+summary(d.data2)
+hist(d.data2)
+```
+d.data2<- as.numeric(d.data) #change integers to numeric
+d.data2 #looks good
+summary(d.data2) #looks good
+hist(d.data2)
+```
+Data is ready for means and standard deviations 
+```{r}
+#sand goby
+## mean 
+SGHmean <-mean(d.data2$Sand.goby.high)
+SGHmean #just checking to make sure it works
+SGLmean <-mean(d.data2$Sand.goby.low)
+##standard dev
+
 
 ```
 
