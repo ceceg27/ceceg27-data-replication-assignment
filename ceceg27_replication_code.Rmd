@@ -1,20 +1,33 @@
 ---
-title: "Replication Code"
-output: html_document
+title: "AN588 Final Replication Analysis"
+author: "Cecelia Gerstenbacher"
+date: "12/10/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: true
+    theme: yeti 
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, comment = "##", prompt = TRUE,
-+     tidy = TRUE, tidy.opts = list(width.cutoff = 75), fig.path = "img/")
-```
+# Decreasing seagrass density negatively influences associated fauna (McCloskey and Unsworth, 2015)
 
-# Decreasing seagrass density negatively influences associated fauna: A replication attempt.
+[]<https://peerj.com/articles/1053/>
+
+Required packages:
+
+```{r, message = FALSE}
+library(curl)
+library(ggplot2)
+library(forcats)
+```
 
 ## Study Description:
 
 Seagrasses are marine angiosperms which exist on all continents except Antarctica and often form dense monoculture meadows in shallow and calm coastal inlets. These dense meadows provide, among other things, habitat to a wide variety of marine organisms, many of which are endangered or commercially valuable. Unfortunately, seagrasses are experiencing rapid degradation, as anthropogenic threats such as trawling, dredging, and eutrophication have caused a tenfold decrease in seagrass cover over the last 40 years.
 
-Locally, this degradation can look like a boat anchor dragging through a meadow, ripping up seagrass and reducing the plant, or "shoot" density in the vicinity. This subsequently reduces the complexity of the habitat. Because complex habitats provide more hide space for juveniles and vulnerable prey, a reduction in this complexity is theorized to reduce the density and diversity of ecosystem associated fauna, even on small scales. To test this out, this study collected motile fauna samples using seine net hauls from six 6x6 meter seagrass plots from the same meadow over a gradient of varying habitat characteristics, including seagrass percent cover and shoot density. They repeated this for ten 6x6 seagrass plots at the same location the subsequent year.
+Locally, this degradation can look like a boat anchor dragging through a meadow, ripping up seagrass and reducing the plant, or "shoot" density in the vicinity. This subsequently reduces the complexity of the habitat. Because complex habitats provide more hide space for juveniles and vulnerable prey, a reduction in this complexity is theorized to reduce the density and diversity of ecosystem associated fauna, even on small scales. To test the hypothesis that a local decrease in seagrass density will negatively impact associatef fauna, this study collected motile fauna samples using seine net hauls from six 6x6 meter seagrass plots from the same meadow over a gradient of varying habitat characteristics, including seagrass percent cover and shoot density. They recorded each animal in each siene net haul. They then repeated this for ten 6x6 seagrass plots at the same location the subsequent year.
 
 In order to statistically confirm if there is a difference in faunal density and diversity between high and low cover plots the following analyses were employed
 
@@ -30,7 +43,7 @@ In order to statistically confirm if there is a difference in faunal density and
 
 ##### - Spearmans Rank Correlations
 
-For the purposes of this assignment, we will be replicating the ANOSIM and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+For the purposes of this assignment, we will be replicating the ANOSIM and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and create a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
 
 ## Getting started
 
@@ -42,74 +55,168 @@ First, lets load and explore the data.
 library(curl)
 f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/ceceg27_rawdata.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-d
+head(d)
 ```
 
-The data set being used shows each family and species collected during the seine net samples, as well as its common name. It then shows the amount of this species collected for 8 high an 8 low density plots.
+The data set being used shows each family and species collected during the seine net samples, as well as its common name. It then shows the amount of this species collected for 8 high an 8 low seagrass density plots.
 
-Unfortunately, in this format, data analysis is difficult. I have gone ahead and reformatted the excel file, and will upload it below, but I first wanted to show the original. 
+Unfortunately, in this format, data analysis is difficult. I have gone ahead and reformatted the excel file, and will upload it below, but I first wanted to show the original.
 
 ```{r}
 library(curl)
-f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/edited_data.csv")
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/meansandsd.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-d
+head(d)
 summary(d)
 ```
 
-require(ggplot2)
-ggplot(data = d, aes(x=species, y=count)) + geom_boxplot(aes(fill=percent.cover))
+This format allows us to get the means and standard deviations for each species, and for each genre of plot (low or high percent cover).
 
-
+### Collecting meand and standard deviations 
+Here, the summary function provides us with each mean, but we want each mean to be saved as a variable, as well as each sd. Lets do that below.
 
 ```{r}
-require(ggplot2)
-p <- ggplot(data = d, aes(x = species, y = log(count), fill = percent.cover)) 
-p <- p + geom_col(position = position_dodge(),color = "black",preserve = "single") 
-p <- p + theme(axis.text.x = element_text(angle = 90))
-p <- p + scale_fill_manual(values = c(rep(c("gray25", "gray75"))))
-p <- p + ylab("Faunal bundance (log) per siene haul") +xlab("")
+m1 <- mean(d$Pomatoschistus.minutus.low)
+m1
+sd1 <- sd(d$Pomatoschistus.minutus.low)
+sd1
+#this works well, time to do it with the rest of the data
+m2 <- mean(d$Pomatoschistus.minutus.high)
+sd2 <- sd (d$Pomatoschistus.minutus.high)
+m3 <- mean(d$Symphodus.melops.high)
+sd3 <- sd(d$Symphodus.melops.high)
+m4 <- mean (d$Symphodus.melops.low)
+sd4 <- sd(d$Symphodus.melops.low)
+m5 <- mean(d$Spinachia.spinachia.high)
+sd5 <- sd(d$Spinachia.spinachia.high)
+m6 <- mean (d$Spinachia.spinachia.low)
+sd6 <- sd(d$Spinachia.spinachia.low)
+m7 <- mean(d$Pleuronectes.platessa.high)
+sd7 <- sd(d$Pleuronectes.platessa.high)
+m8 <- mean(d$Pleuronectes.platessa.low)
+sd8 <- sd(d$Pleuronectes.platessa.low)
+m9 <- mean(d$Palaemon.serratus.high)
+sd9 <- sd(d$Palaemon.serratus.high)
+m10 <- mean(d$Palaemon.serratus.low)
+sd10 <- sd(d$Palaemon.serratus.low)
+m11 <- mean (d$Crangon.crangon.high)
+sd11 <- sd(d$Crangon.crangon.high)
+m12 <- mean(d$Crangon.crangon.low)
+sd12 <- sd(d$Crangon.crangon.low)
+m13 <- mean(d$Taurulus.bubalis.high)
+sd13 <-sd(d$Taurulus.bubalis.high)
+m14 <- mean(d$Taurulus.bubalis.low)
+sd14 <- sd(d$Taurulus.bubalis.low)
+m15 <- mean(d$Callionymus.lyra.high)
+sd15 <- sd(d$Callionymus.lyra.high)
+m16 <- mean(d$Callionymus.lyra.low)
+sd16 <- sd(d$Callionymus.lyra.low)
+m17 <- mean(d$Gobiusculus.flavescens.high)
+sd17 <- sd(d$Gobiusculus.flavescens.high)
+m18 <- mean(d$Gobiusculus.flavescens.low)
+sd18 <- sd(d$Gobiusculus.flavescens.low)
+m19 <- mean(d$Clupea.harengus.high)
+sd19 <- sd(d$Clupea.harengus.high)
+m20 <- mean(d$Clupea.harengus.low)
+sd20 <- sd(d$Clupea.harengus.low)
+m21 <- mean(d$Centrolabrus.exoletus.high.)
+sd21 <- sd(d$Centrolabrus.exoletus.high.)
+m22 <- mean(d$Centrolabrus.exoletus.low.)
+sd22 <- sd(d$Centrolabrus.exoletus.low.)
+m23 <- mean(d$Labrus.bergylta.high)
+sd23 <- sd(d$Labrus.bergylta.high)
+m24 <- mean(d$Labrus.bergylta.low)
+sd24 <- sd(d$Labrus.bergylta.low)
+m25 <- mean(d$Pollachius.pollachius.high)
+sd25 <- sd(d$Pollachius.pollachius.high)
+m26 <- mean(d$Pollachius.pollachius.low)
+sd26 <- sd(d$Pollachius.pollachius.low)
+m27 <- mean(d$Atherina.prebyter.high)
+sd27 <- sd(d$Atherina.prebyter.high)
+m28 <- mean(d$Atherina.prebyter.low)
+sd28 <- sd(d$Atherina.prebyter.low)
+m29 <- mean(d$Syngnathus.acus.high)
+sd29 <- sd(d$Syngnathus.acus.high)
+m30 <- mean(d$Syngnathus.acus.low)
+sd30 <- sd(d$Syngnathus.acus.low)
+m31 <- mean(d$Ciliata.mustela.high)
+sd31 <- sd(d$Ciliata.mustela.high)
+m32 <- mean(d$Ciliata.mustela.low)
+sd32 <- sd(d$Ciliata.mustela.low)
+m33 <- mean(d$Gadus.morhua.high)
+sd33 <- sd(d$Gadus.morhua.high)
+m34 <- mean(d$Gadus.morhua.low)
+sd34 <- sd(d$Gadus.morhua.low)
+m35 <- mean(d$Scyliorhinus.canicula.high)
+sd35 <- sd(d$Scyliorhinus.canicula.high)
+m36 <- mean(d$Scyliorhinus.canicula.low)
+sd36 <- sd(d$Scyliorhinus.canicula.low)
+m37 <- mean(d$Entelurus.aequoreus.high)
+sd37 <- sd(d$Entelurus.aequoreus.high)
+m38 <- mean(d$Entelurus.aequoreus.low)
+sd38 <- sd(d$Entelurus.aequoreus.low)
+```
+
+Ok that was painful and I'm sure there was a better way to do it but hey. Also its very frustrating to know how easy this would be in excel :(. Ok I'm gonna make all of these values into a vector so there aren't a million means and sds floating around.
+
+```{r}
+means <- c(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, m18, m19, m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, m37, m38)
+means
+sds <- c(sd1, sd2, sd3, sd4, sd5, sd6, sd7, sd8, sd9, sd10, sd11, sd12, sd13, sd14, sd15, sd16, sd17, sd18, sd19, sd20, sd21, sd22, sd23, sd24, sd25, sd26, sd27, sd28, sd29, sd30, sd31, sd32, sd33, sd34, sd35, sd36, sd37, sd38)
+sds
+```
+
+Nice, now we have means and sds which we can actually work with, and which match the means and sds in the data that the paper provided.
+
+## Replicating the Figure
+
+After lots of trials, I couldn't figure out how to get the means and sds to segregate based on both species and percent cover in a ggplot. I think it would be much easier to just have these values in a csv. This is what the authors did (they just calculated mean and sd in excel before exporting the data for analysis). Sooooo, now that I've shown that I can get mean and sd in R, I'm going to create and import a new dataset, so I can properly segregate in my ggplot. These mean and ad vectors will become useful later anyway.
+
+```{r}
+library(curl)
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/ggplotdata.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+summary(d)
+head(d)
+```
+
+Ok now we can make the ggplot much easier.
+
+```{r}
+p <-ggplot(d, aes(x=species, y=sqrt(mean), fill=percent.cover)) + 
+    geom_bar(position=position_dodge(),stat="identity", color = "black", width = .6) + #formatting bars
+    geom_errorbar(aes(x = species, ymin=sqrt(mean), ymax=sqrt(mean + sd)),
+                  width=.4,                    
+                  position=position_dodge(width = .6))  # making the error bars
+p <- p + scale_fill_manual(labels = c("High % Cover", "Low % Cover"), values = c(rep(c("black", "gray75"))))#adding color
+p <- p + theme(legend.box.background = element_rect(color = "black",fill = "white"),legend.title=element_blank(), legend.position = c(.9,.8)) #making legend look like original
+p <- p + theme(axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank()) #removing grid and gray background
+p <- p + scale_y_continuous(expand = c(0.0,0.0),
+                   limits = c(0.0,7)) #making graph start at 0
+p <- p + theme(axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)) + coord_equal(1/0.6) #adjusting x axis
+library(forcats)
+p <- p + aes(x = fct_inorder(species)) #reordering to match the source
+p <- p + ylab("Faunal bundance (log) per siene haul") +xlab("") #label 
 
 p
-
-```
- + geom_errorbar(aes(ymin=count-sd, ymax=count+sd), width=.2,
-                 position=position_dodge(.9)) 
-
-
-?geom_col
 ```
 
 
-In this format, high and low plots are not in the same row, and each column is by species, not by plot, so their analyses can be conducted separately. 
+Now lets compare it to the original: 
 
-Now lets prepare the data so we can easily get summary stats  
-```{r}
-d.data <-as.data.frame(d) #turn data into a data frame
-d.data2 <-as.numeric(d.data$count)
-d.data2
+```{r, echo=FALSE, out.width = '70%'}
+knitr::include_graphics("replicated.figure.png", error = FALSE)
 ```
 
 
-d.data2 <- lapply(
-d.data2
-summary(d.data2)
-hist(d.data2)
-```
-d.data2<- as.numeric(d.data) #change integers to numeric
-d.data2 #looks good
-summary(d.data2) #looks good
-hist(d.data2)
-```
-Data is ready for means and standard deviations 
-```{r}
-#sand goby
-## mean 
-SGHmean <-mean(d.data2$Sand.goby.high)
-SGHmean #just checking to make sure it works
-SGLmean <-mean(d.data2$Sand.goby.low)
-##standard dev
+At this point, the bargraph is looking about 95% similar to the original, but I am still facing one problem. 
 
+The original bar graph says that the data was log transformed, however if I try to log transform this data it gives me negative numbers and completely messes up the graph. When I don't transform the data, it gives me the same plot but to a different scale, with the y axis going up to 30. In the original plot the y axis goes up to 7. I began to think maybe they had done some other transformation on the data. I square rooted the means and sds and it gave me something very similar to the original graph. The means are now the same, but the sds look a little bit off. It would have been very beneficial if they reported exactly how they transformed the data to get it to scale. 
 
-```
+Despite that, I'm pretty happy with how the graph turned out. It actually took forever to make what I originally thought would be a simple graph, but I did it. 
 
+Now lets get on to some more complex data analysis
