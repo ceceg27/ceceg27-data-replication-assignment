@@ -12,8 +12,13 @@ output:
 ---
 
 # Decreasing seagrass density negatively influences associated fauna (McCloskey and Unsworth, 2015)
+```{r, echo=FALSE, out.width = '70%'}
+knitr::include_graphics("img/seagrass.jpg", error = FALSE)
+```
 
-[]<https://peerj.com/articles/1053/>
+
+
+<https://peerj.com/articles/1053/>
 
 Required packages:
 
@@ -33,18 +38,16 @@ Locally, this degradation can look like a boat anchor dragging through a meadow,
 In order to statistically confirm if there is a difference in faunal density and diversity between high and low cover plots the following analyses were employed
 
 ##### - Summary stats (means, standard deviations)
-
 ##### - ANOSIM (analysis of similarity)
-
 ##### - Shannon Wiener Diversity Index
-
 ##### - Non-metric Multidimensional scaling (nMDS) with superimposed Bray Curtis Clusters
-
-##### - Percentage Similarity Contributions
-
+##### - Percentage Similarity Contributions (SIMPER)
 ##### - Spearmans Rank Correlations
+##### - T test and Mann Whitney U test 
 
-For the purposes of this assignment, we will be replicating the Shannon Wiener Diversity Index and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and create a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+For the purposes of this assignment, we will be replicating the Shannon Wiener Diversity Index as well as several T test and Mann Whitney U tests. Further, we will replicate all summary statistics, and create a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+
+**NOTE** I did attempt to conduct some of the other analyses. Unfortunately they require information on seagrass percent cover which is not provided in the raw data. There is a table showing percent covers for six of the plots in the beginning of the results, but there were 16 plots total, and there is no way to tell which percent cover corresponds to which plot. This made any analysis using percent cover instead of "high" and "low" catagories impossible. Luckily there was enough I could do without this info, but it did hinder me. I didn't realize this until I was deep into the analyses, and I decided to just work with what I had. 
 
 ## Getting Started
 
@@ -201,7 +204,7 @@ p
 Now lets compare it to the original: 
 
 ```{r, echo=FALSE, out.width = '70%'}
-knitr::include_graphics("replicated.figure.png", error = FALSE)
+knitr::include_graphics("img/replicated.figure.png", error = FALSE)
 ```
 
 
@@ -211,7 +214,68 @@ The original bar graph says that the data was log transformed, however if I try 
 
 Despite that, I'm pretty happy with how the graph turned out. It actually took forever to make what I originally thought would be a simple graph, but I did it. 
 
+Before we move on, I can't stand that the bargraph is in black and white, so I decided to change its coloring. 
+
+```{r, echo = FALSE}
+p <-ggplot(d, aes(x=species, y=sqrt(mean), fill=percent.cover)) + 
+    geom_bar(position=position_dodge(),stat="identity", color = "black", width = .6) + #formatting bars
+    geom_errorbar(aes(x = species, ymin=sqrt(mean), ymax=sqrt(mean + sd)),
+                  width=.4,                    
+                  position=position_dodge(width = .6))  # making the error bars
+p <- p + scale_fill_manual(labels = c("High % Cover", "Low % Cover"), values = c(rep(c("lightblue", "pink"))))#adding color
+p <- p + theme(legend.box.background = element_rect(color = "black",fill = "white"),legend.title=element_blank(), legend.position = c(.9,.8)) #making legend look like original
+p <- p + theme(axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank()) #removing grid and gray background
+p <- p + scale_y_continuous(expand = c(0.0,0.0),
+                   limits = c(0.0,7)) #making graph start at 0
+p <- p + theme(axis.text.x = element_text(angle = 65, vjust = 1, hjust=1)) + coord_equal(1/0.6) #adjusting x axis
+library(forcats)
+p <- p + aes(x = fct_inorder(species)) #reordering to match the source
+p <- p + ylab("Faunal bundance (log) per siene haul") +xlab("") #label 
+
+p
+```
+
 Now lets get on to some more complex data analysis.
+
+## Species Variability between high and low plots
+
+Now that this figure is created, I think it will be valuable to explore some of the variation we see within species among high and low percent cover plots. Within the original text, this is done via t tests and Mann Whitney tests. 
+
+### Common Prawn 
+
+```{r, echo=FALSE, out.width = '60%'}
+knitr::include_graphics("img/commonprawn.jpg", error = FALSE)
+```
+
+Lets First look at the difference in common prawn (Palaemon serratus) between high and low plots. Because this is a small amount of data, I will just be putting them into vectors
+
+```{r}
+prawn_high <- c(51, 45, 2, 3, 3, 22, 77, 15)
+prawn_low <- c(20, 68, 10, 107, 92, 53, 12, 35)
+
+t.test <- t.test(prawn_high, prawn_low)
+t.test
+```
+Here, we are given a p value of 0.1928. Interestingly, within the text this value is 0.1628. I am not sure if this is a mistype on their part, or if somehow the data is slightly different. One key thing to point out is that this test is done on sampmles from 2013. In their raw data, they do not specify which year the data came from. I can only assume that is it 2013, but it may be 2012. The authors should specify this. However, in both mine and the original test, there is no significant difference between common prawn numbers between high and low plots. 
+
+### Plaice 
+
+```{r, echo=FALSE, out.width = '60%'}
+knitr::include_graphics("img/plaice.jpg", error = FALSE)
+```
+
+Next lets check the Plaices (Pleuronectes platessa). A Mann Whitney test, also known as the Wilcox test, is used here as the data is non parametric 
+
+```{r}
+Plaicehigh <- c(0, 0, 0, 0, 0, 0, 1, 0)
+Plaicelow <- c(2, 7, 2, 0, 1, 3, 1, 2)
+wilcox.test(Plaicehigh, Plaicelow)
+```
+Here we are given a p value of .00332. This corresponds with the result in the text of p < .005. There is no record of the exact p value in the text. What the authors fail to emphasize is that the low cover plots actually had more wrasses than the high cover plots, which does not support their original hypothesis. 
 
 ## Shannon Wiener Diversity Index
 
@@ -257,7 +321,7 @@ shannon_table
 ```
 
 ```{r, echo=FALSE, out.width = '60%'}
-knitr::include_graphics("diversitytable.png", error = FALSE)
+knitr::include_graphics("img/diversitytable.png", error = FALSE)
 ```
 
 As you can see, our results and the results from the original raw data are identical! Now all we have left to do is collect and average and standard deviations from our data, which I will do below. 
@@ -283,7 +347,13 @@ t.test
 
 Our results shows that Shannon Wiener diversity is significantly higher in the high cover samples than in the low cover samples with a p value of .038 (t test, p<.05). This supports the original paper's findings. 
 
-## Spearmans Rank Correlation 
+## Conclusion
+
+Overall I was able to produce exact replicates of the Shannon Diversity Index, T tests, Mann Whitney tests, means, standard deviations, and the figure showing the means and standard deviations for each species within in high and low plots. I struggled most with formatting my data properly in excel to be imported into R. The authors didn't leave the data in a nice format for R to understand. I also struggled with the lack of data and organization, as this limited what analyses I was able to conduct. This experience was telling of how even articles which provide raw data aren't exactly easy to replicate. 
+
+
+
+
 
 
 
