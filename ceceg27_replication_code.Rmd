@@ -21,9 +21,10 @@ Required packages:
 library(curl)
 library(ggplot2)
 library(forcats)
+library(vegan)
 ```
 
-## Study Description:
+## Study Description
 
 Seagrasses are marine angiosperms which exist on all continents except Antarctica and often form dense monoculture meadows in shallow and calm coastal inlets. These dense meadows provide, among other things, habitat to a wide variety of marine organisms, many of which are endangered or commercially valuable. Unfortunately, seagrasses are experiencing rapid degradation, as anthropogenic threats such as trawling, dredging, and eutrophication have caused a tenfold decrease in seagrass cover over the last 40 years.
 
@@ -31,11 +32,11 @@ Locally, this degradation can look like a boat anchor dragging through a meadow,
 
 In order to statistically confirm if there is a difference in faunal density and diversity between high and low cover plots the following analyses were employed
 
-##### - Summary stats (means, standard deviations, frequencies)
+##### - Summary stats (means, standard deviations)
 
 ##### - ANOSIM (analysis of similarity)
 
-##### - Shannon Weiner Diversity Index
+##### - Shannon Wiener Diversity Index
 
 ##### - Non-metric Multidimensional scaling (nMDS) with superimposed Bray Curtis Clusters
 
@@ -43,24 +44,13 @@ In order to statistically confirm if there is a difference in faunal density and
 
 ##### - Spearmans Rank Correlations
 
-For the purposes of this assignment, we will be replicating the ANOSIM and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and create a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
+For the purposes of this assignment, we will be replicating the Shannon Wiener Diversity Index and Spearmans Rank Correlations. Further, we will replicate all summary statistics, and create a figure showing the mean fish abundance per seine haul for 8 high and 8 low cover plots, including standard deviation.
 
-## Getting started
+## Getting Started
 
 ### Loading data and collecting summary stats
 
 First, lets load and explore the data.
-
-```{r}
-library(curl)
-f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/ceceg27_rawdata.csv")
-d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
-head(d)
-```
-
-The data set being used shows each family and species collected during the seine net samples, as well as its common name. It then shows the amount of this species collected for 8 high an 8 low seagrass density plots.
-
-Unfortunately, in this format, data analysis is difficult. I have gone ahead and reformatted the excel file, and will upload it below, but I first wanted to show the original.
 
 ```{r}
 library(curl)
@@ -70,10 +60,10 @@ head(d)
 summary(d)
 ```
 
-This format allows us to get the means and standard deviations for each species, and for each genre of plot (low or high percent cover).
+This data is not an exact replica of the format in which the raw data was originally provided. I have went ahead and changed the format to make it conducive to replication in R, since the analysis was not originally done in R. This new format allows us to get the means and standard deviations for each species, and for each genre of plot (low or high percent cover). The original raw data is in the repo under the name "rawdata.csv"
 
-### Collecting meand and standard deviations 
-Here, the summary function provides us with each mean, but we want each mean to be saved as a variable, as well as each sd. Lets do that below.
+### Collecting means and standard deviations 
+Above, the summary function provides us with each mean, but we want each mean to be saved as a variable, as well as each sd. Lets do that below.
 
 ```{r}
 m1 <- mean(d$Pomatoschistus.minutus.low)
@@ -157,7 +147,7 @@ m38 <- mean(d$Entelurus.aequoreus.low)
 sd38 <- sd(d$Entelurus.aequoreus.low)
 ```
 
-Ok that was painful and I'm sure there was a better way to do it but hey. Also its very frustrating to know how easy this would be in excel :(. Ok I'm gonna make all of these values into a vector so there aren't a million means and sds floating around.
+Ok that was painful and I'm sure there was a better way to do it but hey. Now I will take all of these values and make them into two vectors so we don't have dozens of means and sds floating around. 
 
 ```{r}
 means <- c(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15, m16, m17, m18, m19, m20, m21, m22, m23, m24, m25, m26, m27, m28, m29, m30, m31, m32, m33, m34, m35, m36, m37, m38)
@@ -170,7 +160,9 @@ Nice, now we have means and sds which we can actually work with, and which match
 
 ## Replicating the Figure
 
-After lots of trials, I couldn't figure out how to get the means and sds to segregate based on both species and percent cover in a ggplot. I think it would be much easier to just have these values in a csv. This is what the authors did (they just calculated mean and sd in excel before exporting the data for analysis). Sooooo, now that I've shown that I can get mean and sd in R, I'm going to create and import a new dataset, so I can properly segregate in my ggplot. These mean and ad vectors will become useful later anyway.
+I will be replicating a bargraph figure which shows the means and standard deviations for the high and low cover plots for each species collected during the siene net hauls. 
+
+After lots of trials, I couldn't figure out how to get the means and sds within the vectors I created to segregate based on both species and percent cover in a ggplot. I think it would be much easier to just have these values in a csv, but I did want to show that I am capable of calculating them in R. This is what the authors did (they calculated mean and sd in excel before exporting the data for analysis). Sooooo, now that I've shown that I can get mean and sd in R, I'm going to create and import a new dataset, so I can properly segregate in my ggplot. These mean and ad vectors will become useful later anyway.
 
 ```{r}
 library(curl)
@@ -219,4 +211,79 @@ The original bar graph says that the data was log transformed, however if I try 
 
 Despite that, I'm pretty happy with how the graph turned out. It actually took forever to make what I originally thought would be a simple graph, but I did it. 
 
-Now lets get on to some more complex data analysis
+Now lets get on to some more complex data analysis.
+
+## Shannon Wiener Diversity Index
+
+The Shannon Wiener Diversity Index is a metric used to determine diversity when a system contains too many species to be individually accounted for. It uses a small sample to extrapolate overall system diversity. The higher the index value, the more diverse the system is predicted to be. 
+
+For the Shannon Diversity Index, we want to run two separate analyses, one on the high density plots and one on the low density plots. As our data currently stands, the diversity command will only run this analysis on all the data combined. I thus think is necessary to separate the data into two sheets. 
+
+### High diversity calculation
+```{r}
+library(curl)
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/shannonhigh.csv")
+sh <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+summary(sh)
+head(sh)
+```
+
+```{r}
+shannonh <- diversity(sh, index = "shannon")
+shannonh
+```
+
+### Low diversity calculation
+```{r}
+library(curl)
+f<- curl ("https://raw.githubusercontent.com/ceceg27/ceceg27-data-replication-assignment/main/shannonlow.csv")
+sl <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+summary(sl)
+head(sl)
+```
+
+```{r}
+shannonl <- diversity(sl, index = "shannon")
+shannonl
+```
+
+### Comparing to original 
+
+That wasn't so bad! While there is no table in the text which shows the individual results of the Shannon Wiener Diversity Index, there is luckily a table in the raw data. Lets make our results into a similar table, and compare. 
+
+```{r}
+shannon_table <- data.frame(setNames(shannonl, shannonh))
+shannon_table
+```
+
+```{r, echo=FALSE, out.width = '60%'}
+knitr::include_graphics("diversitytable.png", error = FALSE)
+```
+
+As you can see, our results and the results from the original raw data are identical! Now all we have left to do is collect and average and standard deviations from our data, which I will do below. 
+
+```{r}
+shmean <- mean(shannonh)
+shsd <- sd(shannonh)
+slmean <- mean(shannonl)
+slsd <- sd(shannonl)
+
+shmean
+shsd
+slmean
+slsd
+```
+
+The means and standard deviations are also identical to the original data! These means and sds are reported both in the original raw data table above, and in the final text. They are also determined to be statistically different using a t test. Let's see if our data is statistically different at p < .05. 
+
+```{r}
+t.test <- t.test(shannonh, shannonl, data = shannon_table)
+t.test
+```
+
+Our results shows that Shannon Wiener diversity is significantly higher in the high cover samples than in the low cover samples with a p value of .038 (t test, p<.05). This supports the original paper's findings. 
+
+## Spearmans Rank Correlation 
+
+
+
